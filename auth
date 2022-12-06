@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+CURL_COOKIE_JAR=auth.txt
+CURL_OPTS="-b $CURL_COOKIE_JAR -c $CURL_COOKIE_JAR"
+
+redirect_uri=$(curl -Ls -o /dev/null -w '%{url_effective}' https://adventofcode.com/auth/github)
+
+location=$(echo "$redirect_uri" | perl -pe 's|redirect_uri%3D.*?(?=%26)||')
+
+echo "Please go to below url and log in with GitHub, and then get the code and state from the url you are redirected to."
+curl $CURL_OPTS -s -S -o /dev/null $location
+echo "$location"
+
+IFS=' ' read -r -p 'Please enter the code and the state saparate by a space: ' code state
+
+url="https://adventofcode.com/auth/github/callback?code=$code&state=$state"
+curl $CURL_OPTS -o /dev/null -sSL $url
+chmod 400 $CURL_COOKIE_JAR
