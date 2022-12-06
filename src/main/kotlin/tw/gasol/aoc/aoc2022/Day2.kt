@@ -12,6 +12,37 @@ enum class Guess(val score: Int) {
         }
     }
 
+    fun offer(strategy: String): Guess =
+        when (strategy) {
+            "X" -> { // lose
+                when (this) {
+                    Rock -> Scissor
+                    Paper -> Rock
+                    Scissor -> Paper
+                }
+            }
+
+            "Y" -> { // draw
+                when (this) {
+                    Rock -> Rock
+                    Paper -> Paper
+                    Scissor -> Scissor
+                }
+            }
+
+            "Z" -> { // win
+                when (this) {
+                    Rock -> Paper
+                    Paper -> Scissor
+                    Scissor -> Rock
+                }
+            }
+
+            else -> {
+                throw IllegalArgumentException("Invalid strategy: $strategy")
+            }
+        }
+
     companion object {
         fun fromString(str: String): Guess {
             return when (str) {
@@ -49,6 +80,16 @@ class Day2 {
     }
 
     fun part2(input: String): Int {
-        return 0
+        val result = input.splitToSequence("\n")
+            .filterNot { it.isBlank() }
+            .map { line ->
+                val splits = line.split(" ")
+                assert(splits.size == 2) { "Invalid line: $line" }
+                val (opponentGuess, strategy) = splits
+                val opponent = Guess.fromString(opponentGuess)
+                val me = opponent.offer(strategy)
+                StrategyGuide(opponent, me).getScore()
+            }
+        return result.sum()
     }
 }
