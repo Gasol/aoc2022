@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+export TZ=EST
+
+if [ ! -r auth.txt ]; then
+	echo "Please login first before generating input" >&2
+	exit 1
+fi
+
+begin_ts=$(date -jf %Y%m%dT%H%M%S 20221201T000000 +%s)
+now_ts=$(date +%s)
+let days=($now_ts-$begin_ts)/86400+1
+
+input_dir=src/main/resources/input
+for day in $(jot $days); do
+	file=day$day.txt
+	target_file=$input_dir/$file
+	if [ -e "$target_file" ]; then
+		echo "$file exists, skipping..." >&2
+		continue
+	fi
+	echo "Generating $file..." >&2
+	curl -sS -b auth.txt -Lo $target_file "https://adventofcode.com/2022/day/$day/input"
+done
