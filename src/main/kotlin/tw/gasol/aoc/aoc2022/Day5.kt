@@ -32,6 +32,14 @@ class Day5 {
         }
     }
 
+    private fun runProcedure9001(stacks: List<ArrayDeque<Char>>, procedure: MoveProcedure) { // CrateMover 9001
+        (1..procedure.quantity).map { _ ->
+            stacks[procedure.from - 1].removeLast()
+        }.reversed().forEach { char ->
+            stacks[procedure.to - 1].addLast(char)
+        }
+    }
+
     private fun parseProcedure(line: String) = MoveProcedure.fromString(line)
 
     private fun buildStack(input: String): List<ArrayDeque<Char>> {
@@ -64,8 +72,24 @@ class Day5 {
         return stacks
     }
 
-    fun part2(input: String): Int {
-        return 0
+    fun part2(input: String): String {
+        val stackBuilder = StringBuilder()
+        var stacks: List<ArrayDeque<Char>>? = null
+        input.lineSequence()
+            .forEach { line ->
+                if (stacks == null) {
+                    if (line.isBlank()) {
+                        stacks = buildStack(stackBuilder.toString())
+                    } else {
+                        stackBuilder.appendLine(line)
+                    }
+                } else if (line.isNotBlank()) {
+                    val procedure = parseProcedure(line)
+                    runProcedure9001(stacks!!, procedure)
+                }
+            }
+
+        return stacks?.map { it.last() }?.joinToString("").orEmpty()
     }
 }
 
