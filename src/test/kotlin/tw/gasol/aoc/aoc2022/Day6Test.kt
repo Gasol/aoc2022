@@ -16,5 +16,7 @@ class Day6Test {
 
     @Test
     fun part2() {
+        val result = Day6().part2(input)
+        assertEquals(2851, result)
     }
 }
