@@ -1,6 +1,7 @@
 package tw.gasol.aoc.aoc2022
 
 import java.util.Scanner
+import kotlin.math.abs
 
 interface Filesystem {
     val name: String
@@ -129,6 +130,16 @@ class Day7 {
     }
 
     fun part2(input: String): Int {
-        return 0
+        val totalSpaceAvailable = 70_000_000
+        val filesystem = buildFilesystem(input) as Directory
+        val totalUsedSpace = filesystem.getTotalSize()
+        val unusedSpace = totalSpaceAvailable - totalUsedSpace
+        val atLeastSpaceNeedsToBeDelete = 30_000_000 - unusedSpace
+
+        return filesystem
+            .findChildrenRecursively { it is Directory }
+            .map { it as Directory }
+            .sortedWith(compareBy { abs(it.getTotalSize() - atLeastSpaceNeedsToBeDelete) })
+            .first().getTotalSize()
     }
 }
