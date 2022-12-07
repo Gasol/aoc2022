@@ -22,6 +22,14 @@ class Day3 {
     }
 
     fun part2(input: String): Int {
-        return 0
+        return input.lineSequence()
+            .filterNot { it.isBlank() }
+            .chunked(3)
+            .map(::findBadge)
+            .map(::getItemType)
+            .sum()
     }
+
+    private fun findBadge(groups: List<String>): Char =
+        groups.map { it.toSet() }.reduce(Set<Char>::intersect).first()
 }
