@@ -6,18 +6,17 @@ import org.junit.jupiter.api.Assertions.*
 
 class Day4Test {
 
+    private val input = readInput("/input/day4.txt")
+
     @Test
     fun part1() {
-        val result = Day4().part1(readInput())
+        val result = Day4().part1(input)
         assertEquals(507, result)
     }
 
-    private fun readInput(): String = javaClass.getResource("/input/day4.txt")
-        ?.readText() ?: error("Input not found")
-
     @Test
     fun part2() {
-        val result = Day4().part2(readInput())
+        val result = Day4().part2(input)
         assertEquals(897, result)
     }
 }
