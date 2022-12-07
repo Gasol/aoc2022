@@ -5,7 +5,7 @@ class Day1 {
     private fun getCaloriesGroups(input: String): Sequence<Sequence<Int>> {
         return input.splitToSequence("\n\n")
             .map { chunk ->
-                chunk.splitToSequence("\n")
+                chunk.lineSequence()
                     .filterNot { it.isBlank() }
                     .map { it.toInt() }
             }

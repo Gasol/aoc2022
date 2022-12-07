@@ -5,7 +5,7 @@ import tw.gasol.aoc.aoc2022.day2.StrategyGuide
 
 class Day2 {
     fun part1(input: String): Int {
-        val result = input.splitToSequence("\n")
+        val result = input.lineSequence()
             .filterNot { it.isBlank() }
             .map { line ->
                 val splits = line.split(" ")
@@ -18,7 +18,7 @@ class Day2 {
     }
 
     fun part2(input: String): Int {
-        val result = input.splitToSequence("\n")
+        val result = input.lineSequence()
             .filterNot { it.isBlank() }
             .map { line ->
                 val splits = line.split(" ")
