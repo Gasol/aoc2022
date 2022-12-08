@@ -1,19 +1,26 @@
 package tw.gasol.aoc.aoc2022
 
+import org.jetbrains.annotations.TestOnly
+
 class Day8 {
     fun part1(input: String): Int {
+        val treeMap = buildTreeMap(input)
+//        treeMap.printVisibleMap()
+        return treeMap.getVisibleCount()
+    }
+
+    fun part2(input: String): Int {
+        val treeMap = buildTreeMap(input)
+        return treeMap.getHighestScenicScore()
+    }
+
+    fun buildTreeMap(input: String): TreeMap {
         val lines = input.lines().filterNot { it.isBlank() }
         val height = lines.size
         val width = lines.first().length
 
         val heights = lines.flatMap { it.toList() }
-        val treeMap = TreeMap(width, height, heights)
-//        treeMap.printVisibleMap()
-        return treeMap.getVisibleCount()
-    }
-
-    fun part2(input: String) {
-
+        return TreeMap(width, height, heights)
     }
 }
 
@@ -115,6 +122,59 @@ class TreeMap(private val width: Int, private val height: Int, private val heigh
         }
     }
 
+    fun getHighestScenicScore(): Int {
+        var highestScore = 0
+        (0 until height).forEach { y ->
+            (0 until width).forEach { x ->
+                getScenicScore(x, y)
+                    .takeIf { it > highestScore }
+                    ?.let { highestScore = it }
+            }
+        }
+        return highestScore
+    }
+
+    private fun computeScore(axis: Axis, pos: Int, range: IntProgression, treeHeight: Char): Int {
+        var score = 0
+        for (i in range) {
+            val (x, y) = if (axis == Axis.X) {
+                pos to i
+            } else {
+                i to pos
+            }
+            val height = get(x, y)
+            score++
+            if (height >= treeHeight) {
+                break
+            }
+        }
+        return score
+    }
+
+    @TestOnly
+
+    fun computeUpScore(x: Int, y: Int, treeHeight: Char) =
+        computeScore(Axis.X, x, y - 1 downTo 0, treeHeight)
+
+    @TestOnly
+    fun computeDownScore(x: Int, y: Int, treeHeight: Char) =
+        computeScore(Axis.X, x, y + 1 until height, treeHeight)
+
+    @TestOnly
+    fun computeLeftScore(x: Int, y: Int, treeHeight: Char) =
+        computeScore(Axis.Y, y, x - 1 downTo 0, treeHeight)
+
+    @TestOnly
+    fun computeRightScore(x: Int, y: Int, treeHeight: Char) =
+        computeScore(Axis.Y, y, x + 1 until width, treeHeight)
+
+    private fun getScenicScore(x: Int, y: Int): Int {
+        val treeHeight = get(x, y)
+        return arrayOf(::computeUpScore, ::computeLeftScore, ::computeRightScore, ::computeDownScore)
+            .map { it(x, y, treeHeight) }
+            .reduce(Math::multiplyExact)
+    }
+
     private fun setVisible(x: Int, y: Int, value: Boolean) {
         assert(x in 0 until width) { "x ($x) is out of range" }
         assert(y in 0 until height) { "y ($y) is out of range" }
@@ -129,3 +189,4 @@ class TreeMap(private val width: Int, private val height: Int, private val heigh
 }
 
 enum class Direction { TOP, BOTTOM, LEFT, RIGHT }
+enum class Axis { X, Y }
