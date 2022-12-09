@@ -26,29 +26,21 @@ class TreeMap(private val width: Int, private val height: Int, private val heigh
 
     init {
         (0 until width).forEach { x ->
-            var baseHeight: Char? = null
+            var baseHeight = '.'
             getHeightList(x, 0, Direction.TOP).forEachIndexed { y, height ->
-                val visible: Boolean
-                if (baseHeight == null) {
+                val visible = if (height > baseHeight) {
                     baseHeight = height
-                    visible = true
-                } else if (height > baseHeight!!) {
-                    visible = true
-                    baseHeight = height
-                } else visible = false
+                    true
+                } else false
                 setVisible(x, y, visible)
             }
 
-            baseHeight = null
+            baseHeight = '.'
             getHeightList(x, 0, Direction.BOTTOM).forEachIndexed { reversedY, height ->
-                val visible: Boolean
-                if (baseHeight == null) {
+                val visible = if (height > baseHeight) {
                     baseHeight = height
-                    visible = true
-                } else if (height > baseHeight!!) {
-                    visible = true
-                    baseHeight = height
-                } else visible = false
+                    true
+                } else false
                 val y = this.height - reversedY - 1
                 val oldVisible = getVisible(x, y)
                 setVisible(x, y, visible || oldVisible)
@@ -56,30 +48,22 @@ class TreeMap(private val width: Int, private val height: Int, private val heigh
         }
 
         (0 until height).forEach { y ->
-            var baseHeight: Char? = null
+            var baseHeight = '.'
             getHeightList(0, y, Direction.LEFT).forEachIndexed { x, height ->
-                val visible: Boolean
-                if (baseHeight == null) {
+                val visible = if (height > baseHeight) {
                     baseHeight = height
-                    visible = true
-                } else if (height > baseHeight!!) {
-                    visible = true
-                    baseHeight = height
-                } else visible = false
+                    true
+                } else false
                 val oldVisible = getVisible(x, y)
                 setVisible(x, y, visible || oldVisible)
             }
 
-            baseHeight = null
+            baseHeight = '.'
             getHeightList(0, y, Direction.RIGHT).forEachIndexed { reversedX, height ->
-                val visible: Boolean
-                if (baseHeight == null) {
+                val visible = if (height > baseHeight) {
                     baseHeight = height
-                    visible = true
-                } else if (height > baseHeight!!) {
-                    visible = true
-                    baseHeight = height
-                } else visible = false
+                    true
+                } else false
                 val x = this.height - reversedX - 1
                 val oldVisible = getVisible(x, y)
                 setVisible(x, y, visible || oldVisible)
