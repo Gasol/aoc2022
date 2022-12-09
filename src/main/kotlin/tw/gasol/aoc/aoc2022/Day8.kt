@@ -6,12 +6,12 @@ class Day8 {
     fun part1(input: String): Int {
         val treeMap = TreeMap.fromInput(input)
 //        treeMap.printVisibleMap()
-        return treeMap.getVisibleCount()
+        return treeMap.countVisible()
     }
 
     fun part2(input: String): Int {
         val treeMap = TreeMap.fromInput(input)
-        return treeMap.getHighestScenicScore()
+        return treeMap.computeHighestScenicScore()
     }
 }
 
@@ -102,7 +102,7 @@ class TreeMap(private val width: Int, private val height: Int, private val heigh
         }
     }
 
-    fun getVisibleCount() = visibleMap.count { it }
+    fun countVisible() = visibleMap.count { it }
 
     fun printVisibleMap() {
         (0 until height).forEach { y ->
@@ -113,7 +113,7 @@ class TreeMap(private val width: Int, private val height: Int, private val heigh
         }
     }
 
-    fun getHighestScenicScore(): Int {
+    fun computeHighestScenicScore(): Int {
         var highestScore = 0
         (0 until height).forEach { y ->
             (0 until width).forEach { x ->
