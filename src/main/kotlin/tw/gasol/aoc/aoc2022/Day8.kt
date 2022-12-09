@@ -32,7 +32,9 @@ class TreeMap(private val width: Int, private val height: Int, private val heigh
                     baseHeight = height
                     true
                 } else false
-                setVisible(x, y, visible)
+                if (visible) {
+                    setVisible(x, y, true)
+                }
             }
 
             baseHeight = '.'
@@ -41,9 +43,10 @@ class TreeMap(private val width: Int, private val height: Int, private val heigh
                     baseHeight = height
                     true
                 } else false
-                val y = this.height - reversedY - 1
-                val oldVisible = getVisible(x, y)
-                setVisible(x, y, visible || oldVisible)
+                if (visible) {
+                    val y = this.height - reversedY - 1
+                    setVisible(x, y, true)
+                }
             }
         }
 
@@ -54,8 +57,9 @@ class TreeMap(private val width: Int, private val height: Int, private val heigh
                     baseHeight = height
                     true
                 } else false
-                val oldVisible = getVisible(x, y)
-                setVisible(x, y, visible || oldVisible)
+                if (visible) {
+                    setVisible(x, y, true)
+                }
             }
 
             baseHeight = '.'
@@ -64,9 +68,10 @@ class TreeMap(private val width: Int, private val height: Int, private val heigh
                     baseHeight = height
                     true
                 } else false
-                val x = this.height - reversedX - 1
-                val oldVisible = getVisible(x, y)
-                setVisible(x, y, visible || oldVisible)
+                if (visible) {
+                    val x = this.height - reversedX - 1
+                    setVisible(x, y, true)
+                }
             }
         }
     }
