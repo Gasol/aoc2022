@@ -29,22 +29,32 @@ class Day8Test {
 
     @Test
     fun samplePart1FirstExample() {
-        val treeMap = Day8().buildTreeMap(sampleInput)
+        val treeMap = TreeMap.fromInput(sampleInput)
         val x = 2
         val y = 1
         val treeHeight = treeMap.get(x, y)
-        val result = arrayOf(treeMap::computeUpScore, treeMap::computeLeftScore, treeMap::computeRightScore, treeMap::computeDownScore)
+        val result = arrayOf(
+            treeMap::computeUpScore,
+            treeMap::computeLeftScore,
+            treeMap::computeRightScore,
+            treeMap::computeDownScore
+        )
             .map { it(x, y, treeHeight) }
         assertEquals(listOf(1, 1, 2, 2), result)
     }
 
     @Test
     fun samplePart1SecondExample() {
-        val treeMap = Day8().buildTreeMap(sampleInput)
+        val treeMap = TreeMap.fromInput(sampleInput)
         val x = 2
         val y = 3
         val treeHeight = treeMap.get(x, y)
-        val result = arrayOf(treeMap::computeUpScore, treeMap::computeLeftScore, treeMap::computeRightScore, treeMap::computeDownScore)
+        val result = arrayOf(
+            treeMap::computeUpScore,
+            treeMap::computeLeftScore,
+            treeMap::computeRightScore,
+            treeMap::computeDownScore
+        )
             .map { it(x, y, treeHeight) }
         assertEquals(listOf(2, 2, 2, 1), result)
     }

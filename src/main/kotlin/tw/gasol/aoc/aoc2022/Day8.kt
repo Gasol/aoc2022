@@ -4,23 +4,14 @@ import org.jetbrains.annotations.TestOnly
 
 class Day8 {
     fun part1(input: String): Int {
-        val treeMap = buildTreeMap(input)
+        val treeMap = TreeMap.fromInput(input)
 //        treeMap.printVisibleMap()
         return treeMap.getVisibleCount()
     }
 
     fun part2(input: String): Int {
-        val treeMap = buildTreeMap(input)
+        val treeMap = TreeMap.fromInput(input)
         return treeMap.getHighestScenicScore()
-    }
-
-    fun buildTreeMap(input: String): TreeMap {
-        val lines = input.lines().filterNot { it.isBlank() }
-        val height = lines.size
-        val width = lines.first().length
-
-        val heights = lines.flatMap { it.toList() }
-        return TreeMap(width, height, heights)
     }
 }
 
@@ -185,6 +176,16 @@ class TreeMap(private val width: Int, private val height: Int, private val heigh
         assert(x in 0 until width) { "x ($x) is out of range" }
         assert(y in 0 until height) { "y ($y) is out of range" }
         return visibleMap[y * width + x]
+    }
+
+    companion object {
+        fun fromInput(input: String): TreeMap {
+            val lines = input.lines()
+                .filterNot { it.isBlank() }
+
+            val heights = lines.flatMap { it.toList() } // flat to 1D
+            return TreeMap(lines.size, lines.first().length, heights)
+        }
     }
 }
 
