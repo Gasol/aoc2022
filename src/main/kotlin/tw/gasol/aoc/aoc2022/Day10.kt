@@ -11,6 +11,7 @@ class Day10 {
         val cycleStep = 40
 
         input.lineSequence()
+            .filterNot { it.isBlank() }
             .forEach { line ->
                 val scanner = Scanner(line)
                 val op = scanner.next()
