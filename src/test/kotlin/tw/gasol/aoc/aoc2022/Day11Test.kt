@@ -5,6 +5,8 @@ import kotlin.test.Test
 
 class Day11Test {
 
+    private val input = readInput("/input/day11.txt")
+
     private val sampleInput = """
         Monkey 0:
           Starting items: 79, 98
@@ -38,5 +40,10 @@ class Day11Test {
     @Test
     fun testPart1Sample() {
         assertEquals(10605, Day11().part1(sampleInput))
+    }
+
+    @Test
+    fun testPart1() {
+        assertEquals(99840, Day11().part1(input))
     }
 }

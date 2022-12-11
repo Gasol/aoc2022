@@ -1,13 +1,11 @@
 package tw.gasol.aoc.aoc2022
 
 import java.util.*
-import javax.script.ScriptEngine
-import javax.script.ScriptEngineManager
 
 data class MonkeySpec(
     val id: Int,
     val items: MutableList<Int>,
-    val operation: (ScriptEngine, Int) -> Int,
+    val operation: (Int) -> Int,
     val test: (Int) -> Boolean,
     val ifTrue: Int,
     val ifFalse: Int
@@ -31,7 +29,7 @@ data class MonkeySpec(
         private fun parseMonkeySpec(scanner: Scanner): MonkeySpec {
             var id: Int? = null
             var items: List<Int>? = null
-            var operation: ((ScriptEngine, Int) -> Int)? = null
+            var operation: ((Int) -> Int)? = null
             var test: ((Int) -> Boolean)? = null
             var ifTrue: Int? = null
             var ifFalse: Int? = null
@@ -49,14 +47,19 @@ data class MonkeySpec(
 
                     line.startsWith("Operation") -> {
                         val operationLine = line.substringAfter(":")
-                        operation = { engine, old ->
-                            val script = buildString {
-                                appendLine("val old = $old")
-                                append("val ")
-                                appendLine(operationLine)
-                                appendLine("new")
+                        operation = { old ->
+                            val (lval, op, rval) = operationLine.substringAfter("= ")
+                                .trim()
+                                .split(" ")
+                            val lint = if (lval == "old") old else lval.toInt()
+                            val rint = if (rval == "old") old else rval.toInt()
+                            when (op) {
+                                "+" -> lint + rint
+                                "-" -> lint - rint
+                                "*" -> lint * rint
+                                "/" -> lint / rint
+                                else -> throw IllegalArgumentException("Unknown operation: $op")
                             }
-                            engine.eval(script) as Int
                         }
                     }
 
@@ -96,7 +99,6 @@ data class MonkeySpec(
 class Day11 {
     fun part1(input: String): Int {
         val specs = MonkeySpec.fromInput(input)
-        val engine = ScriptEngineManager().getEngineByExtension("kts")
 
         val monkeyIds = specs.keys.sorted()
         val monkeyInspectionCounts = mutableMapOf(*monkeyIds.map { it to 0 }.toTypedArray())
@@ -108,7 +110,7 @@ class Day11 {
                 monkeyInspectionCounts[id] = monkeyInspectionCounts[id]!! + spec.items.count()
                 with(spec.items.iterator()) {
                     forEach { item ->
-                        val newItem = spec.operation(engine, item) / 3
+                        val newItem = spec.operation(item) / 3
                         val toMonkeyId = if (spec.test(newItem)) spec.ifTrue else spec.ifFalse
                         specs[toMonkeyId]!!.items += newItem
                         remove()
