@@ -4,11 +4,12 @@ import java.math.BigInteger
 import java.util.*
 
 typealias WorryLevel = BigInteger
+
 data class MonkeySpec(
     val id: Int,
     val items: MutableList<WorryLevel>,
     val operation: (WorryLevel) -> WorryLevel,
-    val test: (WorryLevel) -> Boolean,
+    val testDivider: Int,
     val ifTrue: Int,
     val ifFalse: Int
 ) {
@@ -32,7 +33,7 @@ data class MonkeySpec(
             var id: Int? = null
             var items: List<WorryLevel>? = null
             var operation: ((WorryLevel) -> WorryLevel)? = null
-            var test: ((WorryLevel) -> Boolean)? = null
+            var testDivider: Int? = null
             var ifTrue: Int? = null
             var ifFalse: Int? = null
 
@@ -67,12 +68,9 @@ data class MonkeySpec(
 
                     line.startsWith("Test") -> {
                         val testLine = line.substringAfter(": ")
-                        val (op, value) = testLine.split(" by ")
-                        test = { input ->
-                            if (op == "divisible") {
-                                input % value.toBigInteger() == BigInteger.ZERO
-                            } else error("Unknown test: $testLine")
-                        }
+                        val (_, value) = testLine.split(" by ")
+                        testDivider = value.toInt()
+
                         repeat(2) {
                             val ifLine = scanner.nextLine().trim()
                             val (beforeLine, afterLine) = ifLine.split(": ")
@@ -93,7 +91,7 @@ data class MonkeySpec(
                     line.isBlank() -> break
                 }
             }
-            return MonkeySpec(id!!, items!!.toMutableList(), operation!!, test!!, ifTrue!!, ifFalse!!)
+            return MonkeySpec(id!!, items!!.toMutableList(), operation!!, testDivider!!, ifTrue!!, ifFalse!!)
         }
     }
 }
@@ -114,7 +112,8 @@ class Day11 {
                 with(spec.items.iterator()) {
                     forEach { item ->
                         val newItem = spec.operation(item) / three
-                        val toMonkeyId = if (spec.test(newItem)) spec.ifTrue else spec.ifFalse
+                        val toMonkeyId =
+                            if (newItem % spec.testDivider.toBigInteger() == BigInteger.ZERO) spec.ifTrue else spec.ifFalse
                         specs[toMonkeyId]!!.items += newItem
                         remove()
                     }
