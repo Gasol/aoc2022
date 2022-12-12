@@ -96,6 +96,15 @@ data class MonkeySpec(
     }
 }
 
+fun gcd(a: Int, b: Int): Int {
+    if (b == 0) return a
+    return gcd(b, a % b)
+}
+
+fun lcm(a: Int, b: Int): Int {
+    return a * b / gcd(a, b)
+}
+
 class Day11 {
     fun part1(input: String): Int {
         val specs = MonkeySpec.fromInput(input)
@@ -126,5 +135,39 @@ class Day11 {
             .takeLast(2)
 //            .also { println(it) }
             .reduce { acc, i -> acc * i }
+    }
+
+    fun part2(input: String): Long {
+        val specs = MonkeySpec.fromInput(input)
+
+        val monkeyIds = specs.keys.sorted()
+        val monkeyInspectionCounts = mutableMapOf(*monkeyIds.map { it to 0 }.toTypedArray())
+        val lcm = specs.values.map { it.testDivider }.reduce(::lcm)
+        println("LCM: $lcm")
+
+        for (round in 1..10_000) {
+            println("Round $round")
+            monkeyIds.forEach { id ->
+                val spec = specs[id]!!
+                monkeyInspectionCounts[id] = monkeyInspectionCounts[id]!! + spec.items.count()
+                with(spec.items.iterator()) {
+                    forEach { item ->
+                        val newItem = spec.operation(item) % lcm.toBigInteger()
+                        val toMonkeyId = if (newItem % spec.testDivider.toBigInteger() == BigInteger.ZERO) {
+                            spec.ifTrue
+                        } else spec.ifFalse
+                        specs[toMonkeyId]!!.items += newItem
+                        remove()
+                    }
+                }
+            }
+            specs.forEach(::println)
+        }
+        return monkeyInspectionCounts.values
+            .sorted()
+            .takeLast(2)
+            .also { println(it) }
+            .map { it.toLong() }
+            .reduce(Long::times)
     }
 }

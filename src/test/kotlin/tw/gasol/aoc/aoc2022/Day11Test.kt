@@ -1,6 +1,6 @@
 package tw.gasol.aoc.aoc2022
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import kotlin.test.Test
 
 class Day11Test {
@@ -40,6 +40,11 @@ class Day11Test {
     @Test
     fun testPart1Sample() {
         assertEquals(10605, Day11().part1(sampleInput))
+    }
+
+    @Test
+    fun testPart2Sample() {
+        assertEquals(2713310158, Day11().part2(sampleInput))
     }
 
     @Test
