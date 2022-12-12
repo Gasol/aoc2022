@@ -1,12 +1,14 @@
 package tw.gasol.aoc.aoc2022
 
+import java.math.BigInteger
 import java.util.*
 
+typealias WorryLevel = BigInteger
 data class MonkeySpec(
     val id: Int,
-    val items: MutableList<Int>,
-    val operation: (Int) -> Int,
-    val test: (Int) -> Boolean,
+    val items: MutableList<WorryLevel>,
+    val operation: (WorryLevel) -> WorryLevel,
+    val test: (WorryLevel) -> Boolean,
     val ifTrue: Int,
     val ifFalse: Int
 ) {
@@ -28,9 +30,9 @@ data class MonkeySpec(
 
         private fun parseMonkeySpec(scanner: Scanner): MonkeySpec {
             var id: Int? = null
-            var items: List<Int>? = null
-            var operation: ((Int) -> Int)? = null
-            var test: ((Int) -> Boolean)? = null
+            var items: List<WorryLevel>? = null
+            var operation: ((WorryLevel) -> WorryLevel)? = null
+            var test: ((WorryLevel) -> Boolean)? = null
             var ifTrue: Int? = null
             var ifFalse: Int? = null
 
@@ -42,7 +44,7 @@ data class MonkeySpec(
                     }
 
                     line.startsWith("Starting items") -> {
-                        items = line.substringAfter(": ").split(", ").map { it.toInt() }
+                        items = line.substringAfter(": ").split(", ").map { it.toBigInteger() }
                     }
 
                     line.startsWith("Operation") -> {
@@ -51,8 +53,8 @@ data class MonkeySpec(
                             val (lval, op, rval) = operationLine.substringAfter("= ")
                                 .trim()
                                 .split(" ")
-                            val lint = if (lval == "old") old else lval.toInt()
-                            val rint = if (rval == "old") old else rval.toInt()
+                            val lint = if (lval == "old") old else lval.toBigInteger()
+                            val rint = if (rval == "old") old else rval.toBigInteger()
                             when (op) {
                                 "+" -> lint + rint
                                 "-" -> lint - rint
@@ -68,7 +70,7 @@ data class MonkeySpec(
                         val (op, value) = testLine.split(" by ")
                         test = { input ->
                             if (op == "divisible") {
-                                input % value.toInt() == 0
+                                input % value.toBigInteger() == BigInteger.ZERO
                             } else error("Unknown test: $testLine")
                         }
                         repeat(2) {
@@ -103,6 +105,7 @@ class Day11 {
         val monkeyIds = specs.keys.sorted()
         val monkeyInspectionCounts = mutableMapOf(*monkeyIds.map { it to 0 }.toTypedArray())
 
+        val three = BigInteger.valueOf(3)
         for (round in 1..20) {
 //            println("Round $round")
             monkeyIds.forEach { id ->
@@ -110,7 +113,7 @@ class Day11 {
                 monkeyInspectionCounts[id] = monkeyInspectionCounts[id]!! + spec.items.count()
                 with(spec.items.iterator()) {
                     forEach { item ->
-                        val newItem = spec.operation(item) / 3
+                        val newItem = spec.operation(item) / three
                         val toMonkeyId = if (spec.test(newItem)) spec.ifTrue else spec.ifFalse
                         specs[toMonkeyId]!!.items += newItem
                         remove()
