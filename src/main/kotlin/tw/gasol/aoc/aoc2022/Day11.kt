@@ -106,6 +106,8 @@ fun lcm(a: Int, b: Int): Int {
 }
 
 class Day11 {
+    private val debug = false
+
     fun part1(input: String): Int {
         val specs = MonkeySpec.fromInput(input)
 
@@ -114,7 +116,7 @@ class Day11 {
 
         val three = BigInteger.valueOf(3)
         for (round in 1..20) {
-//            println("Round $round")
+            println("Round $round")
             monkeyIds.forEach { id ->
                 val spec = specs[id]!!
                 monkeyInspectionCounts[id] = monkeyInspectionCounts[id]!! + spec.items.count()
@@ -128,12 +130,12 @@ class Day11 {
                     }
                 }
             }
-//            specs.forEach(::println)
+            specs.forEach(::println)
         }
         return monkeyInspectionCounts.values
             .sorted()
             .takeLast(2)
-//            .also { println(it) }
+            .also { println(it) }
             .reduce { acc, i -> acc * i }
     }
 
@@ -169,5 +171,11 @@ class Day11 {
             .also { println(it) }
             .map { it.toLong() }
             .reduce(Long::times)
+    }
+
+    private fun println(any: Any) {
+        if (debug) {
+            System.err.println(any)
+        }
     }
 }
