@@ -51,4 +51,9 @@ class Day11Test {
     fun testPart1() {
         assertEquals(99840, Day11().part1(input))
     }
+
+    @Test
+    fun testPart2() {
+        assertEquals(20683044837, Day11().part2(input))
+    }
 }
