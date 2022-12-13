@@ -91,6 +91,12 @@ class Day13Test {
     }
 
     @Test
+    fun part2() {
+        val result = Day13().part2(input)
+        assertEquals(26200, result)
+    }
+
+    @Test
     fun testRightOrder() {
         val pairs = listOf(
             "[]" to "[3]",
