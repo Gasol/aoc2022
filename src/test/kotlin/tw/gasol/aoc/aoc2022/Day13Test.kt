@@ -39,6 +39,46 @@ class Day13Test {
     }
 
     @Test
+    fun sortPackets() {
+        val dividerPackets = listOf("[[2]]", "[[6]]")
+        val day13 = Day13()
+        val packets = buildList {
+            addAll(dividerPackets.map { day13.toPacket(it) })
+            addAll(
+                sampleInput.lines()
+                    .filterNot { it.isBlank() }
+                    .map { day13.toPacket(it) }
+            )
+        }
+        val sortedPackets = Day13().sortPackets(packets)
+
+        assertEquals(
+            """
+            []
+            [[]]
+            [[[]]]
+            [1,1,3,1,1]
+            [1,1,5,1,1]
+            [[1],[2,3,4]]
+            [1,[2,[3,[4,[5,6,0]]]],8,9]
+            [1,[2,[3,[4,[5,6,7]]]],8,9]
+            [[1],4]
+            [[2]]
+            [3]
+            [[4,4],4,4]
+            [[4,4],4,4,4]
+            [[6]]
+            [7,7,7]
+            [7,7,7,7]
+            [[8,7,6]]
+            [9]
+        """.trimIndent(),
+            sortedPackets.joinToString("\n")
+                .replace(" ", "")
+        )
+    }
+
+    @Test
     fun part1() {
         val result = Day13().part1(input)
         assertEquals(5580, result)

@@ -81,4 +81,16 @@ class Day13 {
         }
         error("Invalid line - $line")
     }
+
+    fun sortPackets(packets: List<Packet>): List<Packet> {
+        return packets.sortedWith { o1, o2 ->
+            isRightOrder(o1, o2)?.let {
+                if (it) {
+                    -1
+                } else {
+                    1
+                }
+            } ?: 0
+        }
+    }
 }
