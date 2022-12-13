@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions.*
 import kotlin.test.Test
 
 class Day13Test {
+    private val input = readInput("/input/day13.txt")
+
     private val sampleInput = """
         [1,1,3,1,1]
         [1,1,5,1,1]
@@ -37,6 +39,12 @@ class Day13Test {
     }
 
     @Test
+    fun part1() {
+        val result = Day13().part1(input)
+        assertEquals(5580, result)
+    }
+
+    @Test
     fun testRightOrder() {
         val pairs = listOf(
             "[]" to "[3]",
@@ -51,7 +59,7 @@ class Day13Test {
                 day13.isRightOrder(
                     day13.toPacket(first),
                     day13.toPacket(second)
-                ),
+                )!!,
                 "$first should be right order than $second"
             )
         }
@@ -72,7 +80,7 @@ class Day13Test {
                 day13.isRightOrder(
                     day13.toPacket(first),
                     day13.toPacket(second)
-                ),
+                )!!,
                 "$first should not be right order than $second"
             )
         }

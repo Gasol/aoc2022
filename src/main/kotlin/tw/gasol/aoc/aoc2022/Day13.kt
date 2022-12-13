@@ -11,30 +11,38 @@ class Day13 {
             }
 
         return pairs.map { isRightOrder(it.first, it.second) }
-            .mapIndexed { index, b -> if (b) index + 1 else 0 }
+            .mapIndexed { index, b -> if (b!!) index + 1 else 0 }
             .sum()
     }
 
-    fun isRightOrder(first: List<Any>, second: List<Any>): Boolean {
+    fun isRightOrder(first: List<Any>, second: List<Any>): Boolean? {
         for (i in first.indices) {
             val left = first.getOrNull(i)
-            val right = second.getOrNull(i) ?: return false
+            val right = second.getOrNull(i)
 
             if (left is Int && right is Int) {
-                if (left > right) {
-                    return false
+                return if (left > right) {
+                    false
+                } else if (left < right) {
+                    true
+                } else {
+                    continue
                 }
             } else if (left is List<*> && right is List<*>) {
-                if (!isRightOrder(left as List<Any>, right as List<Any>)) {
-                    return false
-                }
+                isRightOrder(left as List<Any>, right as List<Any>)?.let { return it }
             } else if (left is Int && right is List<*>) {
-                if (!isRightOrder(listOf(left), right as List<Any>)) {
-                    return false
-                }
+                isRightOrder(listOf(left), right as List<Any>)?.let { return it }
+            } else if (right is Int && left is List<*>) {
+                isRightOrder(left as List<Any>, listOf(right))?.let { return it }
             }
         }
-        return true
+        return if (first.size > second.size) {
+            false
+        } else if (first.size < second.size) {
+            true
+        } else {
+            null
+        }
     }
 
     fun toPacket(line: String): Packet {
