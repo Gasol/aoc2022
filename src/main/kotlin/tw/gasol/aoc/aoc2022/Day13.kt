@@ -93,4 +93,21 @@ class Day13 {
             } ?: 0
         }
     }
+
+    fun part2(input: String): Int {
+        val dividerPackets = listOf("[[2]]", "[[6]]")
+        val packets = buildList {
+            addAll(dividerPackets.map { toPacket(it) })
+            addAll(
+                input.lines()
+                    .filterNot { it.isBlank() }
+                    .map { toPacket(it) }
+            )
+        }
+        return sortPackets(packets).map { it.toString().replace(" ", "") }
+            .mapIndexed { index, s ->
+                if (dividerPackets.contains(s.trim())) index + 1 else 0
+            }.filter { it > 0 }
+            .reduce(Int::times)
+    }
 }

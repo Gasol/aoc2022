@@ -39,6 +39,12 @@ class Day13Test {
     }
 
     @Test
+    fun sampleInputPart2() {
+        val result = Day13().part2(sampleInput)
+        assertEquals(140, result)
+    }
+
+    @Test
     fun sortPackets() {
         val dividerPackets = listOf("[[2]]", "[[6]]")
         val day13 = Day13()
