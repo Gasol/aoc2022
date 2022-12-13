@@ -29,11 +29,12 @@ class Day13 {
                     continue
                 }
             } else if (left is List<*> && right is List<*>) {
-                isRightOrder(left as List<Any>, right as List<Any>)?.let { return it }
+                isRightOrder(left.filterIsInstance<Any>(), right.filterIsInstance<Any>())
+                    ?.let { return it }
             } else if (left is Int && right is List<*>) {
-                isRightOrder(listOf(left), right as List<Any>)?.let { return it }
+                isRightOrder(listOf(left), right.filterIsInstance<Any>())?.let { return it }
             } else if (right is Int && left is List<*>) {
-                isRightOrder(left as List<Any>, listOf(right))?.let { return it }
+                isRightOrder(left.filterIsInstance<Any>(), listOf(right))?.let { return it }
             }
         }
         return if (first.size > second.size) {
