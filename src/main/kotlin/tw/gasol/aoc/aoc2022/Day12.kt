@@ -1,5 +1,6 @@
 package tw.gasol.aoc.aoc2022
 
+import java.lang.Exception
 import java.util.*
 import kotlin.Comparator
 import kotlin.math.abs
@@ -40,8 +41,9 @@ class NodeComparator(private val start: Node, private val goal: Node, var curren
 }
 
 class Day12 {
-    fun part1(input: String): Int {
-        val map = input.lines()
+
+    fun genMap(input: String): List<List<Node>> {
+        return input.lines()
             .filterNot { it.isBlank() }
             .mapIndexed { rows, line ->
                 line.toCharArray()
@@ -59,25 +61,19 @@ class Day12 {
                         Node(cols, rows, z, type)
                     }
             }
-        val rows = map.size
-        val cols = map.first().size
+    }
+
+    fun part1(input: String): Int {
+        val map = genMap(input)
 
         val start = map.map { line -> line.firstOrNull { it.type == NodeType.Start } }.firstNotNullOf { it }
         val end = map.map { line -> line.firstOrNull { it.type == NodeType.Goal } }.firstNotNullOf { it }
-        val findNeighbors = { node: Node ->
-            buildList {
-                if (node.x > 0) add(map[node.y][node.x - 1])
-                if (node.x < cols - 1) add(map[node.y][node.x + 1])
-                if (node.y > 0) add(map[node.y - 1][node.x])
-                if (node.y < rows - 1) add(map[node.y + 1][node.x])
-            }.filter { it.z - node.z <= 1 }
-        }
 
         val cost = NodeComparator(start, end)
-        val path = aStartSearch(start, end, cost, findNeighbors) {
+        val path = aStartSearch(start, end, cost, { findNeighbors(it, map) }) {
             cost.currentHeight = it.z
         }
-        printMap(map, path)
+//        printMap(map, path)
         return path.size - 1
     }
 
@@ -86,7 +82,7 @@ class Day12 {
         goal: T,
         costComparator: Comparator<T>,
         neighbors: (T) -> List<T>,
-        test: ((T) -> Unit)? = null
+        setHeight: ((T) -> Unit)? = null
     ): List<T> {
         var frontier: PriorityQueue<T>? = PriorityQueue(costComparator)
         frontier!!.add(start)
@@ -101,7 +97,7 @@ class Day12 {
                 if (current == goal) {
                     break
                 }
-                test?.invoke(current)
+                setHeight?.invoke(current)
 
                 for (next in neighbors(current)) {
                     if (next !in cameFroms) {
@@ -154,4 +150,39 @@ class Day12 {
             println()
         }
     }
+
+    fun part2(input: String): Int {
+        val map = genMap(input)
+
+        val start = map.map { line -> line.firstOrNull { it.type == NodeType.Start } }.firstNotNullOf { it }
+        val end = map.map { line -> line.firstOrNull { it.type == NodeType.Goal } }.firstNotNullOf { it }
+
+        val cost = NodeComparator(start, end)
+        val minSteps = map.flatMap { rows -> rows.filter { it.z == 'a'.code } }
+            .map { start ->
+                try {
+                    val path = aStartSearch(start, end, cost, { findNeighbors(it, map) }) { current ->
+                        cost.currentHeight = current.z
+                    }
+                    path.size
+                } catch (e: Exception) {
+                    Int.MAX_VALUE
+                }
+            }.minOf { it }
+
+        return minSteps - 1
+    }
+
+    private fun findNeighbors(node: Node, map: List<List<Node>>): List<Node> {
+        val rows = map.size
+        val cols = map.first().size
+
+        return buildList {
+            if (node.x > 0) add(map[node.y][node.x - 1])
+            if (node.x < cols - 1) add(map[node.y][node.x + 1])
+            if (node.y > 0) add(map[node.y - 1][node.x])
+            if (node.y < rows - 1) add(map[node.y + 1][node.x])
+        }.filter { it.z - node.z <= 1 }
+    }
+
 }
