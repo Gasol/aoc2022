@@ -16,4 +16,10 @@ class Day14Test {
         val result = Day14().part1(sampleInput)
         assertEquals(24, result)
     }
+
+    @Test
+    fun part1() {
+        val result = Day14().part1(input)
+        assertEquals(964, result)
+    }
 }

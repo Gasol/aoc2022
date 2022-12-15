@@ -19,8 +19,8 @@ class Day14 {
             }
 
         val structure = Structure(rockCoordinates)
-//        structure.print()
         val sands = structure.pourSands(Location(500, 0))
+        structure.print(true, sands)
         return sands.size
     }
 }
@@ -143,20 +143,24 @@ class Structure(coordinates: List<List<Location>>) {
     private fun addSand(sandsMap: MutableMap<Location, Boolean>, start: Location): Location? {
         val queue = PriorityQueue<Location>(compareBy { it.position })
         queue.add(start)
+
+        var getSandOrSymbol = { location: Location ->
+            if (sandsMap.keys.contains(location)) Symbol.Sand else getSymbol(location)
+        }
         while (queue.isNotEmpty()) {
             val current = queue.poll()
-            val list = map[current.position]
-            if (list == null || list.size < current.height) {
+            val list = map[current.position] ?: return null
+            if (list.size < current.height) {
                 return null
             }
-            val symbol = if (sandsMap.containsKey(current)) Symbol.Sand else getSymbol(current) ?: return null
-//            println("current: $symbol(${current.position},${current.height})")
+            val symbol = getSandOrSymbol(current) ?: return null
+//            println("${current.position},${current.height.toString().padStart(3)}: $symbol")
             when (symbol) {
                 Symbol.Sand, Symbol.Rock -> {
                     val left = current.moveLeft()
                     val right = current.moveRight()
-                    val leftSymbol = if (sandsMap.keys.contains(left)) Symbol.Sand else getSymbol(left) ?: return null
-                    val rightSymbol = if (sandsMap.keys.contains(right)) Symbol.Sand else getSymbol(right) ?: return null
+                    val leftSymbol = getSandOrSymbol(left) ?: return null
+                    val rightSymbol = getSandOrSymbol(right) ?: return null
 //                    println("$leftSymbol$symbol$rightSymbol")
                     if ((leftSymbol == Symbol.Sand || leftSymbol == Symbol.Rock)
                         && (rightSymbol == Symbol.Sand || rightSymbol == Symbol.Rock)
@@ -167,8 +171,7 @@ class Structure(coordinates: List<List<Location>>) {
                     }
                     if (leftSymbol == Symbol.Air) {
                         queue.add(left)
-                    }
-                    if (rightSymbol == Symbol.Air) {
+                    } else {
                         queue.add(right)
                     }
                 }
