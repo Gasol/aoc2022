@@ -3,8 +3,11 @@ package tw.gasol.aoc.aoc2022
 import java.util.*
 
 class Day14 {
-    fun part1(input: String): Int {
-        val rockCoordinates = input.lines()
+
+    private val print: Boolean = false
+
+    private fun parseRockCoordinates(input: String): List<List<Location>> {
+        return input.lines()
             .filterNot { it.isBlank() }
             .map { line ->
                 line.split(" -> ").map {
@@ -17,10 +20,38 @@ class Day14 {
                     }
                 }
             }
+    }
 
-        val structure = Structure(rockCoordinates)
+    fun part1(input: String): Int {
+        val structure = Structure(parseRockCoordinates(input))
         val sands = structure.pourSands(Location(500, 0))
-        structure.print(true, sands)
+        if (print) {
+            structure.print(true, sands)
+        }
+        return sands.size
+    }
+
+    fun part2(input: String): Int {
+        val coordinates = parseRockCoordinates(input)
+        val minPosition =
+            coordinates.map { it.sortedBy { it.position }.first() }.sortedBy { it.position }.minOf { it.position }
+        val maxPosition =
+            coordinates.map { it.sortedBy { it.position }.last() }.sortedBy { it.position }.maxOf { it.position }
+        val maxHeight = coordinates.map { it.sortedBy { it.height }.last() }.maxOf { it.height }
+        val floorDepth = 2
+        val floorCoordinates = coordinates.toMutableList().also {
+            it.add(
+                listOf(
+                    Location(minPosition - maxHeight - floorDepth, maxHeight + floorDepth),
+                    Location(maxPosition + maxHeight + floorDepth, maxHeight + floorDepth)
+                )
+            )
+        }
+        val structure = Structure(floorCoordinates)
+        val sands = structure.pourSands(Location(500, 0))
+        if (print) {
+            structure.print(true, sands)
+        }
         return sands.size
     }
 }
@@ -167,6 +198,9 @@ class Structure(coordinates: List<List<Location>>) {
                     ) {
                         val sand = current.moveUp()
                         sandsMap[sand] = true
+                        if (sand == start) {
+                            return null
+                        }
                         return sand
                     }
                     if (leftSymbol == Symbol.Air) {
