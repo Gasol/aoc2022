@@ -21,9 +21,17 @@ class Day15Test {
         Sensor at x=20, y=1: closest beacon is at x=15, y=3
     """.trimIndent()
 
+    private val input = readInput("/input/day15.txt")
+
     @Test
     fun part1Sample() {
         val result = Day15().part1(sampleInput, 10)
         assertEquals(26, result)
+    }
+
+    @Test
+    fun part1() {
+        val result = Day15().part1(input, 2_000_000)
+        assertEquals(5878678, result)
     }
 }

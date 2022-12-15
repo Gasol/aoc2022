@@ -1,7 +1,8 @@
 package tw.gasol.aoc.aoc2022
 
 import java.awt.Point
-import java.awt.Rectangle
+import java.awt.geom.Path2D
+import kotlin.math.abs
 
 class Day15 {
     private fun getPairPointList(input: String): List<Pair<Point, Point>> {
@@ -22,31 +23,49 @@ class Day15 {
 
     fun part1(input: String, row: Int): Int {
         val pairPointsList = getPairPointList(input)
-        val beaconsPresent = testCoverage(pairPointsList, row)
-        val points = pairPointsList.flatMap { it.toList() }
-        return beaconsPresent.filterNot { points.contains(it.key) }.onEach {
-            println("${it.key} ${it.value}")
-        }.count { it.value }
+        return testCoverage(pairPointsList, row)
     }
 
-    private fun testCoverage(pairPointsList: List<Pair<Point, Point>>, row: Int): MutableMap<Point, Boolean> {
+    private fun testCoverage(pairPointsList: List<Pair<Point, Point>>, row: Int): Int {
         val points = pairPointsList.flatMap { it.toList() }
-        val minX = points.minOf { it.x }
-        val maxX = points.maxOf { it.x }
+        var minX = points.minOf { it.x }
+        var maxX = points.maxOf { it.x }
 
-        val beaconsPresent = mutableMapOf<Point, Boolean>()
         val rectangles = pairPointsList.map { (sensor, beacon) ->
-            val size = sensor.distance(beacon).toInt()
-            Rectangle(sensor.x - size, sensor.y, 0, 0).also {
-                it.add(sensor.x + size, sensor.y)
-                it.add(sensor.x, sensor.y + size)
-                it.add(sensor.x, sensor.y - size)
-            }
+            val size = sensor.distanceTo(beacon)
+            minX = minOf(minX, sensor.x - size)
+            maxX = maxOf(maxX, sensor.x + size)
+            Rectangle(
+                Point(sensor.x - size, sensor.y),
+                Point(sensor.x, sensor.y - size),
+                Point(sensor.x, sensor.y + size + 1),
+                Point(sensor.x + size + 1, sensor.y)
+            )
         }
+        var count = 0
         for (i in minX..maxX) {
             val point = Point(i, row)
-            beaconsPresent[point] = rectangles.any { it.contains(point) }
+            if (!points.contains(point) && rectangles.any { it.contains(point) }) {
+                count++
+            }
         }
-        return beaconsPresent
+        return count
     }
+}
+
+data class Rectangle(val topLeft: Point, val topRight: Point, val bottomLeft: Point, val bottomRight: Point) {
+
+    private val path = Path2D.Double().also {
+        it.moveTo(topLeft.x.toDouble(), topLeft.y.toDouble())
+        it.lineTo(topRight.x.toDouble(), topRight.y.toDouble())
+        it.lineTo(bottomRight.x.toDouble(), bottomRight.y.toDouble())
+        it.lineTo(bottomLeft.x.toDouble(), bottomLeft.y.toDouble())
+        it.closePath()
+    }
+
+    fun contains(point: Point) = path.contains(point)
+}
+
+fun Point.distanceTo(other: Point): Int {
+    return abs(this.x - other.x) + abs(this.y - other.y)
 }
