@@ -34,4 +34,10 @@ class Day15Test {
         val result = Day15().part1(input, 2_000_000)
         assertEquals(5878678, result)
     }
+
+    @Test
+    fun part2() {
+        val result = Day15().part2(input)
+        assertEquals(11796491041245, result)
+    }
 }
